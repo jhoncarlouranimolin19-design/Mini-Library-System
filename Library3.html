@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Library System</title>
+<style>
+:root{--bg:#f6f7f9;--ov:rgba(246,247,249,.88);--card:#fff;--ink:#16181d;--mute:#6b7280;--line:#e5e7eb;--acc:#4f46e5;--sel:#eef2ff;--okbg:#dcfce7;--ok:#166534;--badbg:#fee2e2;--bad:#991b1b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1115;--ov:rgba(15,17,21,.88);--card:#181b22;--ink:#eceef2;--mute:#9aa1ae;--line:#2a2f3a;--acc:#818cf8;--sel:#232846;--okbg:#14532d;--ok:#bbf7d0;--badbg:#7f1d1d;--bad:#fecaca}}
+:root[data-theme="dark"]{--bg:#0f1115;--ov:rgba(15,17,21,.88);--card:#181b22;--ink:#eceef2;--mute:#9aa1ae;--line:#2a2f3a;--acc:#818cf8;--sel:#232846;--okbg:#14532d;--ok:#bbf7d0;--badbg:#7f1d1d;--bad:#fecaca}
+*{box-sizing:border-box;margin:0}
+body{font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+main{max-width:1000px;margin:0 auto;padding:24px 16px 48px}
+header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+h1{font-size:22px;letter-spacing:-.02em}h3{font-size:15px;margin:16px 0 8px}
+.m{color:var(--mute);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
+.stat,.card{background:var(--card);border:1px solid var(--line);border-radius:12px}
+.stat{padding:12px 14px}.stat b{display:block;font-size:22px}.stat span{color:var(--mute);font-size:12px}
+.card{padding:16px}
+nav{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px}
+button{font:inherit;cursor:pointer;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 14px;white-space:nowrap}
+button:hover{border-color:var(--acc)}
+button.p,nav button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+input,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+input:focus,select:focus{outline:2px solid var(--acc);outline-offset:-1px}
+label{display:grid;gap:4px;font-size:12px;color:var(--mute)}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.pane{display:none}.pane.on{display:block}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--mute);font-weight:600;font-size:12px}
+th,td{padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody tr{cursor:pointer}tbody tr:hover td,tr.s td{background:var(--sel)}
+.tag{padding:2px 9px;border-radius:99px;font-size:11px;background:var(--okbg);color:var(--ok)}
+.tag.b{background:var(--badbg);color:var(--bad)}
+ul{list-style:none;padding:0}li{padding:8px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;align-items:center}
+li button,td button{padding:3px 10px;font-size:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chips span{background:var(--sel);border-radius:99px;padding:4px 6px 4px 12px}
+.chips button{border:0;background:none;padding:0 6px}
+.bar{height:8px;border-radius:4px;background:var(--line);margin-top:4px}.bar i{display:block;height:100%;border-radius:4px;background:var(--acc)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.wheel{height:270px;perspective:1000px;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:pan-y;user-select:none}
+.ring{position:relative;width:170px;height:200px;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.wc{position:absolute;inset:0;border-radius:14px;padding:12px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between;gap:8px;cursor:pointer;backface-visibility:hidden;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.wh{height:64px;border-radius:8px;background:hsl(var(--h) 60% 50%);color:#fff;display:grid;place-items:center;font-weight:700}
+.wc b{display:block;line-height:1.25;font-size:13px}
+.wc .tag{align-self:flex-start}
+@media(prefers-reduced-motion:reduce){.ring{transition:none}}
+:root{--ov:rgba(246,247,249,.45)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--ov:rgba(15,17,21,.6)}}
+:root[data-theme="dark"]{--ov:rgba(15,17,21,.6)}
+header{background:linear-gradient(120deg,var(--acc),#ec4899);color:#fff;padding:16px 20px;border-radius:14px;box-shadow:0 8px 24px rgba(79,70,229,.3)}
+header .m{color:rgba(255,255,255,.85)}
+.stat,.card{backdrop-filter:blur(6px);background:color-mix(in srgb,var(--card) 94%,transparent)}
+.stat{border-top:4px solid var(--c,var(--acc))}.stat b{color:var(--c,var(--acc))}
+.stat:nth-child(1){--c:#6366f1}.stat:nth-child(2){--c:#f59e0b}.stat:nth-child(3){--c:#10b981}.stat:nth-child(4){--c:#0ea5e9}.stat:nth-child(5){--c:#ec4899}
+button.p,nav button.on{background:linear-gradient(120deg,var(--acc),#ec4899);border-color:transparent}
+nav button{background:color-mix(in srgb,var(--card) 90%,transparent)}
+th{background:var(--sel);color:var(--acc)}
+.bar i{background:linear-gradient(90deg,var(--acc),#ec4899)}
+td button,li button,.chips button{color:var(--bad)}
+.chips span{border:1px solid var(--line)}
+#tg{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.45);color:#fff}
+#tg:hover{background:rgba(255,255,255,.32)}
+:root[data-theme="dark"]{color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
+</style>
+</head>
+<body>
+<main>
+<header><h1>📚 Library System</h1><span class="m">Books · borrowing · waiting list</span><button id="tg" aria-label="Switch between night and light mode">🌙 Night</button></header>
+<div class="stats" id="stats"></div>
+<nav id="nav">
+<button class="on" data-t="books">Books</button><button data-t="wheel">Wheel</button><button data-t="trans">Transactions</button><button data-t="bor">Borrowers</button><button data-t="cats">Categories</button><button data-t="users">Users</button><button data-t="rep">Reports</button><button data-t="logs">Logs</button>
+</nav>
+
+<section class="card pane on" id="p-books">
+<div class="g">
+<label>Accession No.<input id="acc" placeholder="A021"></label>
+<label>Title<input id="title"></label>
+<label>Author<input id="author"></label>
+<label>Description<input id="desc"></label>
+<label>Publisher<input id="pub"></label>
+<label>Published<input id="date" type="date"></label>
+<label>Category<select id="cat"></select></label>
+<label>Type<select id="type"><option>Unknown</option><option>Fiction</option><option>Non-Fiction</option></select></label>
+<label>Price<input id="price" type="number" min="0" value="0"></label>
+</div>
+<div class="row"><button class="p" onclick="addB()">Save</button><button onclick="updB()">Update</button><button onclick="delB()">Delete</button><button onclick="clr()">Clear</button><button onclick="sortB()">Sort A–Z ↑↓</button></div>
+<input id="q" oninput="R()" placeholder="Search title, author, accession…" style="margin-bottom:10px">
+<div class="tw"><table><thead><tr><th>No.</th><th>Title</th><th>Author</th><th>Category</th><th>Type</th><th>Status</th></tr></thead><tbody id="bt"></tbody></table></div>
+<p class="m" style="margin-top:8px">Click a row to edit it.</p>
+</section>
+
+<section class="card pane" id="p-wheel">
+<div class="wheel" id="wheel"><div class="ring" id="ring"></div></div>
+<p style="text-align:center;margin-top:6px"><b id="wl"></b></p>
+<div class="row" style="justify-content:center"><button onclick="spin(-1)">◀ Prev</button><button class="p" onclick="wopen()">View book</button><button onclick="spin(1)">Next ▶</button></div>
+<p class="m" style="text-align:center">Swipe or drag to spin. Showing the first 12 books.</p>
+</section>
+
+<section class="card pane" id="p-trans">
+<div class="two"><div>
+<div class="g" style="grid-template-columns:1fr"><label>Book<select id="tb"></select></label><label>Borrower name<input id="tn" placeholder="Juan Dela Cruz"></label></div>
+<div class="row"><button class="p" onclick="borrow()">Borrow</button><button onclick="ret()">Return</button><button onclick="join()">Join queue</button></div>
+<p class="m">First in line gets the book when it is returned.</p>
+<h3>Waiting list</h3><ul id="ql"></ul>
+</div><div>
+<h3 style="margin-top:0">History</h3><div class="tw" style="max-height:340px;overflow:auto"><table><thead><tr><th>Date</th><th>Book</th><th>Borrower</th><th>Action</th></tr></thead><tbody id="tt"></tbody></table></div>
+</div></div>
+</section>
+
+<section class="card pane" id="p-bor">
+<div class="g"><label>Name<input id="bn"></label><label>ID / LRN<input id="bi"></label><label>Course / Grade<input id="bc"></label><label>Contact<input id="bk"></label></div>
+<div class="row"><button class="p" onclick="addBor()">Add borrower</button></div>
+<div class="tw"><table><thead><tr><th>Name</th><th>ID</th><th>Course</th><th>Contact</th><th></th></tr></thead><tbody id="bor"></tbody></table></div>
+</section>
+
+<section class="card pane" id="p-cats">
+<div class="g"><label>New category<input id="nc" placeholder="Science Fiction"></label></div>
+<div class="row"><button class="p" onclick="addC()">Add category</button></div>
+<div class="chips" id="cl"></div>
+</section>
+
+<section class="card pane" id="p-users">
+<div class="g"><label>Username<input id="un"></label><label>Role<select id="ur"><option>Admin</option><option>Librarian</option><option>Student</option></select></label></div>
+<div class="row"><button class="p" onclick="addU()">Add user</button></div>
+<div class="tw"><table><thead><tr><th>Username</th><th>Role</th><th></th></tr></thead><tbody id="ut"></tbody></table></div>
+</section>
+
+<section class="card pane" id="p-rep"><div id="rep"></div></section>
+
+<section class="card pane" id="p-logs">
+<div class="row" style="margin-top:0"><button onclick="logs=[];go()">Clear logs</button></div>
+<ul id="ll"></ul>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const S={get:k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const K=['acc','title','desc','author','date','pub','cat','type','price'];
+let books=S.get('lib_books')||[],borrowers=S.get('lib_borrowers')||[],trans=S.get('lib_trans')||[],queue=S.get('lib_queue')||[],
+cats=S.get('lib_cats')||['History and Geography','Computers, Information and General Reference','Religion','Adventure','Fiction','Science'],
+users=S.get('lib_users')||[{name:'admin',role:'Admin'}],logs=S.get('lib_logs')||[],sel=-1,asc=true;
+const H='History and Geography',C='Computers, Information and General Reference';
+if(!books.length)books=[
+['A001','Life of Jude','The Adventure of Jude','Unknown','2021-02-26','Unknown',H,'Non-Fiction'],
+['A002','The Brain of Jude','No Brain Programmer','Unknown','2021-02-26','Unknown',C,'Unknown'],
+['A003','The Love of Jude','The loving Angel Jude','Unknown','2021-02-26','Unknown','Religion','Non-Fiction'],
+['A004','Noli Me Tangere','Novel by Jose Rizal','Jose Rizal','1887-01-01','Berlin','Fiction','Fiction'],
+['A005','El Filibusterismo','Sequel to Noli Me Tangere','Jose Rizal','1891-01-01','Ghent','Fiction','Fiction'],
+['A006',"Harry Potter and the Sorcerer's Stone",'A boy discovers he is a wizard','J.K. Rowling','1997-06-26','Bloomsbury','Adventure','Fiction'],
+['A007','The Hunger Games','Katniss fights for survival','Suzanne Collins','2008-09-14','Scholastic','Adventure','Fiction'],
+['A008','Introduction to Algorithms','Data Structures and Algorithms','Thomas Cormen','2009-07-31','MIT Press',C,'Non-Fiction'],
+['A009','Clean Code','A Handbook of Agile Software Craftsmanship','Robert Martin','2008-08-01','Prentice Hall',C,'Non-Fiction'],
+['A010','The Alchemist','A shepherd boy follows his dream','Paulo Coelho','1988-01-01','HarperCollins','Fiction','Fiction'],
+['A011','Atomic Habits','Tiny changes, remarkable results','James Clear','2018-10-16','Avery','Science','Non-Fiction'],
+['A012','Sapiens','A Brief History of Humankind','Yuval Noah Harari','2011-01-01','Harper',H,'Non-Fiction'],
+['A013','Math for Beginners','Basic Algebra and Geometry','Juan Dela Cruz','2020-05-10','DepEd','Science','Non-Fiction'],
+['A014','Philippine History','From Pre-colonial to Modern','Zaide','2015-03-15','National Bookstore',H,'Non-Fiction'],
+['A015','The Bible','Old and New Testament','Various','2000-01-01','Philippine Bible Society','Religion','Non-Fiction'],
+['A016','Percy Jackson and the Lightning Thief','A boy discovers he is a demigod','Rick Riordan','2005-06-28','Disney','Adventure','Fiction'],
+['A017','Diary of a Wimpy Kid','Funny school diary','Jeff Kinney','2007-04-01','Amulet Books','Fiction','Fiction'],
+['A018','Programming in Java','Learn Java for beginners','Maria Santos','2022-08-20','Tech Press',C,'Non-Fiction'],
+['A019','General Science','Physics, Chemistry, Biology','Dr. Reyes','2019-11-11','Science Press','Science','Non-Fiction'],
+['A020','Florante at Laura','Classic Filipino epic poem','Francisco Balagtas','1838-01-01','National','Fiction','Fiction']
+].map(([acc,title,desc,author,date,pub,cat,type])=>({acc,title,desc,author,date,pub,cat,type,price:0,status:'Available'}));
+
+const now=()=>new Date().toLocaleString();
+const save=()=>{S.set('lib_books',books);S.set('lib_borrowers',borrowers);S.set('lib_trans',trans);S.set('lib_queue',queue);S.set('lib_cats',cats);S.set('lib_users',users);S.set('lib_logs',logs)};
+const go=()=>{save();R()};
+const log=m=>logs.unshift(now()+' · '+m);
+const rm=(a,i)=>{a.splice(i,1);go()};
+const opts=(a,f)=>a.map(f).join('');
+
+function R(){
+  const q=$('q').value.toLowerCase(),out=books.filter(b=>b.status=='Borrowed').length;
+  $('stats').innerHTML=[['Books',books.length],['Borrowed',out],['Available',books.length-out],['Borrowers',borrowers.length],['In queue',queue.length]].map(([l,v])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join('');
+  $('bt').innerHTML=opts(books,(b,i)=>(q&&!(b.title+b.author+b.acc+b.cat).toLowerCase().includes(q))?'':`<tr class="${i==sel?'s':''}" onclick="pick(${i})"><td>${esc(b.acc)}</td><td>${esc(b.title)}</td><td>${esc(b.author)}</td><td>${esc(b.cat)}</td><td>${esc(b.type)}</td><td><span class="tag ${b.status=='Borrowed'?'b':''}">${esc(b.status)}</span></td></tr>`);
+  const cv=$('cat').value,tv=$('tb').value;
+  $('cat').innerHTML=opts(cats,c=>`<option>${esc(c)}</option>`);if(cats.includes(cv))$('cat').value=cv;
+  $('tb').innerHTML=opts(books,(b,i)=>`<option value="${i}">${esc(b.title)} (${esc(b.acc)}) · ${esc(b.status)}</option>`);if(tv)$('tb').value=tv;
+  $('tt').innerHTML=opts(trans,t=>`<tr><td>${esc(t.date)}</td><td>${esc(t.book)}</td><td>${esc(t.borrower)}</td><td>${esc(t.action)}</td></tr>`);
+  $('ql').innerHTML=opts(queue,(x,i)=>`<li><span>${i+1}. ${esc(x.borrower)} → <b>${esc(x.book)}</b></span><button onclick="rm(queue,${i})">Remove</button></li>`)||'<li class="m">No one in queue</li>';
+  $('bor').innerHTML=opts(borrowers,(b,i)=>`<tr><td>${esc(b.name)}</td><td>${esc(b.id)}</td><td>${esc(b.course)}</td><td>${esc(b.contact)}</td><td><button onclick="rm(borrowers,${i})">Delete</button></td></tr>`);
+  $('cl').innerHTML=opts(cats,(c,i)=>`<span>${esc(c)}<button onclick="rm(cats,${i})">✕</button></span>`);
+  $('ut').innerHTML=opts(users,(u,i)=>`<tr><td>${esc(u.name)}</td><td>${esc(u.role)}</td><td>${i?`<button onclick="rm(users,${i})">Delete</button>`:''}</td></tr>`);
+  const by={};books.forEach(b=>by[b.cat]=(by[b.cat]||0)+1);const mx=Math.max(1,...Object.values(by));
+  $('rep').innerHTML=`<p><b>${books.length}</b> books · <b>${out}</b> borrowed · <b>${books.length-out}</b> available</p><h3>By category</h3>`+opts(Object.entries(by),([k,v])=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between"><span>${esc(k)}</span><b>${v}</b></div><div class="bar"><i style="width:${v/mx*100}%"></i></div></div>`);
+  $('ll').innerHTML=opts(logs,l=>`<li>${esc(l)}</li>`)||'<li class="m">No logs yet</li>';
+  W();
+}
+const form=()=>{const o={};K.forEach(k=>o[k]=$(k).value.trim());o.author=o.author||'Unknown';o.pub=o.pub||'Unknown';o.price=+o.price||0;o.status='Available';return o};
+function pick(i){sel=i;K.forEach(k=>$(k).value=books[i][k]);R()}
+function clr(){sel=-1;K.forEach(k=>{if(k!='cat'&&k!='type')$(k).value=''});$('price').value=0;$('date').valueAsDate=new Date();R()}
+function addB(){const b=form();if(!b.acc||!b.title)return alert('Accession No. and Title are required.');if(books.some(x=>x.acc==b.acc))return alert('Accession No. already exists.');books.push(b);log('Added book: '+b.title);clr();go()}
+function updB(){if(sel<0)return alert('Select a book first.');const b=form();Object.assign(books[sel],b,{status:books[sel].status});log('Updated book: '+b.title);go()}
+function delB(){if(sel<0)return alert('Select a book first.');if(!confirm('Delete '+books[sel].title+'?'))return;log('Deleted book: '+books[sel].title);books.splice(sel,1);clr();go()}
+function sortB(){asc=!asc;sel=-1;books.sort((a,b)=>asc?a.title.localeCompare(b.title):b.title.localeCompare(a.title));go()}
+function tx(b,who,action){trans.unshift({date:now(),book:b.title,borrower:who,action});log(who+' · '+action.toLowerCase()+' · '+b.title)}
+function borrow(){const b=books[+$('tb').value],n=$('tn').value.trim();if(!n)return alert('Enter the borrower name.');if(b.status=='Borrowed')return alert('Already borrowed. Join the queue instead.');b.status='Borrowed';b.borrower=n;tx(b,n,'Borrowed');go()}
+function ret(){const b=books[+$('tb').value];if(!b||b.status!='Borrowed')return alert('This book is not currently borrowed.');tx(b,b.borrower||'Unknown','Returned');b.status='Available';delete b.borrower;
+  const i=queue.findIndex(x=>x.book==b.title);if(i>=0){const nx=queue.splice(i,1)[0];b.status='Borrowed';b.borrower=nx.borrower;tx(b,nx.borrower,'Borrowed (from queue)');alert(nx.borrower+' was next in line and now has '+b.title)}go()}
+function join(){const b=books[+$('tb').value],n=$('tn').value.trim();if(!n)return alert('Enter your name.');if(b.status!='Borrowed')return alert('This book is available, so you can borrow it directly.');if(queue.some(x=>x.book==b.title&&x.borrower==n))return alert('Already in the queue for this book.');queue.push({book:b.title,borrower:n});log(n+' joined the queue for '+b.title);go()}
+function addBor(){const n=$('bn').value.trim();if(!n)return alert('Enter a name.');borrowers.push({name:n,id:$('bi').value,course:$('bc').value,contact:$('bk').value});log('Added borrower: '+n);['bn','bi','bc','bk'].forEach(i=>$(i).value='');go()}
+function addC(){const c=$('nc').value.trim();if(!c||cats.includes(c))return;cats.push(c);$('nc').value='';go()}
+function addU(){const n=$('un').value.trim();if(!n)return;users.push({name:n,role:$('ur').value});$('un').value='';go()}
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button,.pane').forEach(e=>e.classList.remove('on'));b.classList.add('on');$('p-'+b.dataset.t).classList.add('on')});
+let wi=0,wr=300,wn=1,hov=0,dx0=null;
+function W(){const a=books.slice(0,12);wn=Math.max(a.length,1);const st=360/wn;wr=Math.round(95/Math.tan(Math.PI/Math.max(wn,3)))+30;
+  $('ring').innerHTML=a.map((b,i)=>`<div class="wc" style="--h:${Math.round(i*st)};transform:rotateY(${i*st}deg) translateZ(${wr}px)" onclick="wpick(${i})"><div class="wh">${esc(b.acc)}</div><div><b>${esc(b.title)}</b><span class="m">${esc(b.author)}</span></div><span class="tag ${b.status=='Borrowed'?'b':''}">${esc(b.status)}</span></div>`).join('');spin(0)}
+function spin(d){wi+=d;$('ring').style.transform=`translateZ(${-wr}px) rotateY(${-wi*360/wn}deg)`;const b=books[((wi%wn)+wn)%wn];$('wl').textContent=b?b.title+' · '+b.author:'No books yet'}
+function wpick(i){pick(i);document.querySelector('[data-t="books"]').click()}
+function wopen(){wpick(((wi%wn)+wn)%wn)}
+const wh=$('wheel');wh.onpointerdown=e=>dx0=e.clientX;wh.onpointerup=e=>{if(dx0!=null&&Math.abs(e.clientX-dx0)>40)spin(e.clientX<dx0?1:-1);dx0=null};wh.onmouseenter=()=>hov=1;wh.onmouseleave=()=>hov=0;
+if(!matchMedia('(prefers-reduced-motion:reduce)').matches)setInterval(()=>{if($('p-wheel').classList.contains('on')&&!hov)spin(1)},3500);
+const dark=()=>document.documentElement.dataset.theme?document.documentElement.dataset.theme=='dark':matchMedia('(prefers-color-scheme:dark)').matches;
+function theme(t){document.documentElement.dataset.theme=t;$('tg').textContent=t=='dark'?'☀️ Light':'🌙 Night';S.set('lib_theme',t)}
+$('tg').onclick=()=>theme(dark()?'light':'dark');
+theme(S.get('lib_theme')||(dark()?'dark':'light'));
+$('date').valueAsDate=new Date();save();R();
+</script>
+</body>
+</html>
